@@ -1,33 +1,59 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Lightspeed Background Listener</title>
+    <meta charset="UTF-8">
+    <title>Dennis Nedry - Background Hijacker</title>
 </head>
 <body>
     <script>
-        // 1. Tell the POS we are ready to listen
+        /**
+         * 1. THE SETUP
+         * Replace the URL below with the one from your Pipedream HTTP Trigger.
+         */
+        const PIPEDREAM_URL = "https://eo6vclj7udfr512.m.pipedream.net";
+        const GITHUB_GIF_PAGE = "https://carmenselene.github.io/sell-screen-hijack-testing/sell-screen-hack-test.html";
+
+        // Notify Lightspeed that the background script is ready
         window.parent.postMessage(JSON.stringify({ action: "register" }), "*");
 
-        // 2. Listen for "Business Rule" triggers
+        /**
+         * 2. THE LISTENER
+         * We listen for messages from the Lightspeed Sell Screen.
+         */
         window.addEventListener("message", (event) => {
             try {
+                // Parse the data coming from Lightspeed
                 const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
 
-                // TRIGGER: If ANY product is added to the sale
-                if (data.action === "cart.update") {
-                    console.log("Cart updated! Triggering Blame Game...");
+                // TRIGGER: Every time a product is added to the cart
+                if (data.action === "sale.line_item.added") {
                     
-                    // 3. Command the POS to open your UI Modal
+                    console.log("Hijack initiated for Sale ID:", data.payload.sale_id);
+
+                    // A. THE SILENT PING (To Pipedream)
+                    // This sends the Sale ID to Pipedream so your Node.js step can "hack" it.
+                    fetch(PIPEDREAM_URL, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ 
+                            sale_id: data.payload.sale_id,
+                            triggered_by: "Nedry Hijack"
+                        })
+                    }).catch(err => console.error("Pipedream Ping Failed:", err));
+
+                    // B. THE VISUAL POPUP (To the User)
+                    // This triggers the GIF modal inside the Sell Screen.
                     window.parent.postMessage(JSON.stringify({
                         action: "modal.open",
                         data: {
-                            url: "https://carmenselene.github.io/Support-Toolbox/blamegame.html",
-                            title: "Custom Business Rule Triggered!"
+                            url: GITHUB_GIF_PAGE,
+                            title: "System Security Alert",
+                            size: "small"
                         }
                     }), "*");
                 }
             } catch (e) {
-                // Ignore non-JSON messages
+                // This catch avoids errors from other non-JSON messages in the POS
             }
         });
     </script>
