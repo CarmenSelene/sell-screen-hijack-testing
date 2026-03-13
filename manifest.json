@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "ext_points": {
     "sell.sell_screen.background": {
-      "url": "https://carmenselene.github.io/Support-Toolbox/background.html"
+      "url": "https://carmenselene.github.io/sell-screen-hijack-testing/background.html"
     }
   }
 }
