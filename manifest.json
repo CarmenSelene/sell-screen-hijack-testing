@@ -1,0 +1,9 @@
+{
+  "name": "sell-screen-hijack-testing",
+  "version": "1.0.0",
+  "ext_points": {
+    "sell.sell_screen.background": {
+      "url": "https://carmenselene.github.io/Support-Toolbox/background.html"
+    }
+  }
+}
