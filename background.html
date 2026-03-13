@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lightspeed Background Listener</title>
+</head>
+<body>
+    <script>
+        // 1. Tell the POS we are ready to listen
+        window.parent.postMessage(JSON.stringify({ action: "register" }), "*");
+
+        // 2. Listen for "Business Rule" triggers
+        window.addEventListener("message", (event) => {
+            try {
+                const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+
+                // TRIGGER: If ANY product is added to the sale
+                if (data.action === "cart.update") {
+                    console.log("Cart updated! Triggering Blame Game...");
+                    
+                    // 3. Command the POS to open your UI Modal
+                    window.parent.postMessage(JSON.stringify({
+                        action: "modal.open",
+                        data: {
+                            url: "https://carmenselene.github.io/Support-Toolbox/blamegame.html",
+                            title: "Custom Business Rule Triggered!"
+                        }
+                    }), "*");
+                }
+            } catch (e) {
+                // Ignore non-JSON messages
+            }
+        });
+    </script>
+</body>
+</html>
